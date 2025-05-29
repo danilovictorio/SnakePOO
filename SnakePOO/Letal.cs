@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace SnakePOO
 {
-    internal class Program
+    public class Letal
     {
-        static void Main(string[] args)
+        public Point Posicion { get; private set; }
+        public Letal(int x, int y)
         {
-
-            Juego juego = new Juego();
-            juego.Inicio();
-
+            Posicion = new Point(x, y);
         }
     }
 }
