@@ -5,7 +5,6 @@ using System.Threading;
 namespace SnakePOO
 {
     public class Juego
-
     {
         private Serpiente serpiente;
         private Energia energia;
@@ -13,10 +12,10 @@ namespace SnakePOO
         private int puntaje;
         private int meta;
         private int tamaño;
-        private ConsoleKey direccion;
+        private ConsoleKey direccion = ConsoleKey.RightArrow;
         private int velocidad;
-        public Juego(int tamaño = 20, int velocidad = 200, int meta = 10)
 
+        public Juego(int tamaño = 20, int velocidad = 200, int meta = 10)
         {
             this.tamaño = tamaño;
             this.velocidad = velocidad;
@@ -26,23 +25,22 @@ namespace SnakePOO
 
         public void Inicio()
         {
-            // Inicialización serpiente = new Serpiente(tamaño / 2, tamaño / 2);
+            serpiente = new Serpiente(3, tamaño / 2, tamaño / 2);
+            puntaje = 0;
             energia = GenerarEnergia();
             letales = GenerarLetales(5);
-            // puedes cambiar el número puntaje = 0;
-            // Bucle principal while (true)
 
+            while (true)
             {
                 if (Console.KeyAvailable)
-
                 {
                     var tecla = Console.ReadKey(true).Key;
-                    if (EsDireccionValida(tecla)) direccion = tecla;
+                    if (EsDireccionValida(tecla))
+                        serpiente.CambiarDireccion(tecla);
                 }
 
                 serpiente.Mover(direccion);
 
-                // Colisiones
                 if (serpiente.ColisionConPared(tamaño) || serpiente.ColisionConCuerpo())
                 {
                     GameOver();
@@ -57,19 +55,16 @@ namespace SnakePOO
 
                 if (serpiente.Cabeza.X == energia.Posicion.X && serpiente.Cabeza.Y == energia.Posicion.Y)
                 {
-                    serpiente.Crecer();
                     energia = GenerarEnergia();
                     puntaje++;
-                    if (puntaje >= meta)
 
+                    if (puntaje >= meta)
                     {
                         Victoria();
                         break;
                     }
-
                 }
 
-                // Renderizar
                 var render = new Render(tamaño, serpiente, energia, letales, puntaje);
                 render.Renderizar();
 
@@ -77,12 +72,13 @@ namespace SnakePOO
             }
         }
 
+
         private bool ColisionLetal()
         {
             foreach (var obstaculo in letales)
-
             {
-                if (serpiente.Cabeza.X == obstaculo.Posicion.X && serpiente.Cabeza.Y == obstaculo.Posicion.Y) return true;
+                if (serpiente.Cabeza.X == obstaculo.Posicion.X && serpiente.Cabeza.Y == obstaculo.Posicion.Y)
+                    return true;
             }
 
             return false;
@@ -93,12 +89,9 @@ namespace SnakePOO
             Random rnd = new Random();
             Point punto;
             do
-
             {
                 punto = new Point(rnd.Next(1, tamaño - 1), rnd.Next(1, tamaño - 1));
-            }
-
-            while (serpiente.Cuerpo.Exists(p => p.X == punto.X && p.Y == punto.Y));
+            } while (serpiente.Cuerpo.Exists(p => p.X == punto.X && p.Y == punto.Y));
             return new Energia(punto.X, punto.Y);
         }
 
@@ -107,23 +100,21 @@ namespace SnakePOO
             Random rnd = new Random();
             var lista = new List<Letal>();
             while (lista.Count < cantidad)
-
             {
                 var x = rnd.Next(1, tamaño - 1);
                 var y = rnd.Next(1, tamaño - 1);
                 if (!serpiente.Cuerpo.Exists(p => p.X == x && p.Y == y))
-
                 {
                     lista.Add(new Letal(x, y));
                 }
-
             }
             return lista;
         }
 
         private bool EsDireccionValida(ConsoleKey tecla)
         {
-            return tecla == ConsoleKey.UpArrow || tecla == ConsoleKey.DownArrow || tecla == ConsoleKey.LeftArrow || tecla == ConsoleKey.RightArrow;
+            return tecla == ConsoleKey.UpArrow || tecla == ConsoleKey.DownArrow ||
+                   tecla == ConsoleKey.LeftArrow || tecla == ConsoleKey.RightArrow;
         }
 
         private void GameOver()
@@ -141,6 +132,5 @@ namespace SnakePOO
             Console.WriteLine($"Puntaje final: {puntaje}");
             Console.ReadKey();
         }
-
     }
 }
